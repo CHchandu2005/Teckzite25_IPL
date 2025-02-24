@@ -10,15 +10,15 @@ const apirouter = require('./routes/apiRoute');
 const setupWebSocket = require('./src/websocket'); // Import WebSocket setup
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT||8000;
 
 // Middleware
 app.use(express.json());
-app.use(
-  cors({
-    origin: '*',
-  })
-);
+// app.use(
+//   cors({
+//     origin: '*',
+//   })
+// );
 
 // Routes
 app.use('/auth', authrouter);

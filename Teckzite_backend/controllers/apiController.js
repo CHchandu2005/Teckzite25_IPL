@@ -691,13 +691,85 @@ const getTeaminfo = async (req, res) => {
 };
 
 
+  // const uploadfolder=async(req,res)=>{
+  //   console.log("in upload folder")
+  // try {
+  //   const files = req.files; // Get uploaded images
+  //   if (!files || files.length === 0) return res.status(400).json({ message: "No files uploaded" });
 
+  //   let uploadedData = [];
 
+  //   // Upload images one by one to Cloudinary
+  //   for (const file of files) {
+  //     const playerName = file.originalname.split(".")[0]; // Extract name from filename
+  //     const imageUrl = await uploadImages(file); // Upload using your existing function
 
+  //     // Save to MongoDB
+  //     const player = new Player({ name: playerName, imageUrl });
+  //     await player.save();
 
+  //     uploadedData.push({ name: playerName, imageUrl });
+  //   }
 
+  //   res.json({ message: "Upload successful", data: uploadedData });
+  // } catch (error) {
+  //   console.error("Upload Error:", error);
+  //   res.status(500).json({ message: "Upload failed", error: error.message });
+  // }}
 
+  
+  
 
+  const uploadfolder = async (req, res) => {
+      console.log("in upload folder");
+      try {
+          const files = req.files; // Get uploaded images
+          if (!files || files.length === 0) return res.status(400).json({ message: "No files uploaded" });
+          const uploadImage = await import('../uploadimage.mjs');
+          let uploadedData = [];
+  
+          for (const file of files) {
+              const playerName = file.originalname.split(".")[0]; // Extract name from filename
+              
+              try {
+                  const uploadedImageUrl = await uploadImage.uploadImages(file, {
+                      transformation: [
+                          { width: 500, height: 500, crop: "fill", gravity: "auto" } // Ensures 1:1 aspect ratio
+                      ]
+                  });
+  
+                  console.log("Uploaded Image URL:", uploadedImageUrl);
+  
+                  // Check if player exists
+                  const existingPlayer = await Player.findOne({ name: playerName });
+  
+                  if (existingPlayer) {
+                      // Update the existing player's image URL
+                      existingPlayer.image = uploadedImageUrl;
+                     if( await existingPlayer.save()){
+                      console.log("successfully")
+                     }else{
+                      console.log("not saved")
+                     }
+                  } else {
+                      console.log(`Player with name "${playerName}" not found.`);
+                      return res.status(404).json({ message: `Player "${playerName}" not found` });
+                  }
+  
+                 uploadedData.push({ name: playerName, imageUrl: uploadedImageUrl });
+  
+              } catch (err) {
+                  console.log("Error while uploading photo:", err);
+                  return res.status(500).send({ message: 'Error while uploading photo' });
+              }
+          }
+  console.log(uploadedData);
+          res.json({ message: "Upload successful", data: uploadedData });
+      } catch (error) {
+          console.error("Upload Error:", error);
+          res.status(500).json({ message: "Upload failed", error: error.message });
+      }
+  };
+  
 
-
-module.exports = {getplayers,playersToBuy,accelerateplayers,soldPlayers,getTeams,player,createTeam,bid,deleteTeam,deletePlayer,getteamplayers,addset,fetchsets,unsold,playerinfo,getTeaminfo};
+module.exports = {uploadfolder,getplayers,playersToBuy,accelerateplayers,soldPlayers,getTeams,player,createTeam,bid,deleteTeam,deletePlayer,getteamplayers,addset,fetchsets,unsold,playerinfo,getTeaminfo};

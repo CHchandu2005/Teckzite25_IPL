@@ -21,4 +21,11 @@ router.delete('/deletePlayer',authenticateAdmin,apiController.deletePlayer);
 router.post('/createplayer',authenticateAdmin,upload.single('image'), apiController.player);
 router.post("/addset", authenticateAdmin, upload.single('excel'),apiController.addset);
 router.post("/unsold",apiController.unsold);
+router.post(
+    "/upload-folder",
+    
+    upload.array("photos"),  
+    apiController.uploadfolder 
+  );
+  
 module.exports = router;
