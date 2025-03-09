@@ -14,11 +14,11 @@ const PORT = process.env.PORT||8000;
 
 // Middleware
 app.use(express.json());
-// app.use(
-//   cors({
-//     origin: '*',
-//   })
-// );
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 // Routes
 app.use('/auth', authrouter);

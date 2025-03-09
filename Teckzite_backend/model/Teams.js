@@ -25,7 +25,7 @@ const teamSchema = new mongoose.Schema({
   },
   initialPurse: {
     type: Number,
-    default: 500000,
+    default: 5000,
   },
   teamID: {
     type: String,
